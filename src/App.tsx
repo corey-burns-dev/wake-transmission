@@ -723,6 +723,17 @@ export default function App() {
 						)}
 					</div>
 
+					<a
+						href="https://dreaming.coreyburns.ca"
+						target="_blank"
+						rel="noopener noreferrer"
+						className="w-full py-2 border rounded-lg hover:bg-white/5 transition-colors text-xs font-mono uppercase tracking-widest flex items-center justify-center gap-2 group"
+						style={{ borderColor: `${currentTheme.accent}30` }}
+					>
+						<span className="group-hover:animate-pulse">✨</span>
+						<span>Dream</span>
+					</a>
+
 					<div className="space-y-1">
 						<div className="flex justify-between text-[10px] font-mono">
 							<span>GAIN</span>
