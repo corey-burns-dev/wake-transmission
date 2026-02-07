@@ -577,7 +577,7 @@ export default function App() {
 
 	// Icecast stream URL - dynamic based on environment
 	const STREAM_URL = import.meta.env.DEV
-		? "http://192.168.2.124:8003/radio.ogg"
+		? "/local-stream.ogg"
 		: "https://radio.coreyburns.ca/radio.ogg";
 
 	const handleTogglePlay = async () => {
@@ -613,7 +613,7 @@ export default function App() {
 			<HudMonitor audioData={audioData} theme={currentTheme} />
 
 			{/* HUD Player (Right) */}
-			<div className="absolute right-6 top-6 z-30 w-80 rounded-2xl border border-white/10 bg-black/40 p-4 text-emerald-400 shadow-2xl backdrop-blur-xl">
+			<div className="absolute right-6 bottom-6 md:bottom-auto md:top-6 z-30 w-[calc(100%-3rem)] md:w-80 rounded-2xl border border-white/10 bg-black/40 p-4 text-emerald-400 shadow-2xl backdrop-blur-xl">
 				<div className="flex items-center justify-between mb-4">
 					<div>
 						<p className="text-[10px] uppercase tracking-[0.25em] text-emerald-500/60">
