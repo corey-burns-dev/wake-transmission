@@ -576,9 +576,7 @@ export default function App() {
 	const audioData = useAudioAnalyzer(audioElement, isPlaying);
 
 	// Icecast stream URL - dynamic based on environment
-	const STREAM_URL = import.meta.env.DEV
-		? "/local-stream.ogg"
-		: "https://radio.coreyburns.ca/radio.ogg";
+	const STREAM_URL = import.meta.env.DEV ? "/local-stream.ogg" : "/radio";
 
 	const handleTogglePlay = async () => {
 		if (!audioElement) return;
