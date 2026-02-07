@@ -336,7 +336,6 @@ function AuroraField({
 						// Gravity Well - pulling everything towards center (0,0)
 						// y is height in 3D, here x/y are grid coords.
 						// We want Z (height) to dip based on closeness to center
-						const pull = Math.max(0, 5 - dist); // Stronger near center
 						// Rotate geometry inwards
 						const suction = t * (0.5 + dominantValue); // Spin speed
 						const spiral = angle + suction;
@@ -576,8 +575,10 @@ export default function App() {
 	const currentAnimStyle = animationStyles[animStyleIndex];
 	const audioData = useAudioAnalyzer(audioElement, isPlaying);
 
-	// Icecast stream URL - User can change this
-	const STREAM_URL = "/radio.ogg";
+	// Icecast stream URL - dynamic based on environment
+	const STREAM_URL = import.meta.env.DEV
+		? "http://192.168.2.124:8003/radio.ogg"
+		: "https://radio.coreyburns.ca/radio.ogg";
 
 	const handleTogglePlay = async () => {
 		if (!audioElement) return;
@@ -747,7 +748,9 @@ export default function App() {
 					src={STREAM_URL}
 					crossOrigin="anonymous"
 					autoPlay={false}
-				/>
+				>
+					<track kind="captions" />
+				</audio>
 			</div>
 
 			{/* Center Text */}
