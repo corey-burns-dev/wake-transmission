@@ -577,7 +577,7 @@ export default function App() {
 	const draggingRef = useRef(false);
 	const dragStartRef = useRef({ x: 0, y: 0 });
 	const dragOrigRef = useRef({ x: 0, y: 0 });
-	const [anchored, setAnchored] = useState<'right' | 'left'>('right');
+	const [anchored, setAnchored] = useState<"right" | "left">("right");
 	const [isHidden, setIsHidden] = useState(false);
 	const hideTimerRef = useRef<number | null>(null);
 	const currentTheme = themes[themeIndex];
@@ -624,21 +624,24 @@ export default function App() {
 			if (!draggingRef.current) return;
 			const dx = e.clientX - dragStartRef.current.x;
 			const dy = e.clientY - dragStartRef.current.y;
-			setDragOffset({ x: dragOrigRef.current.x + dx, y: dragOrigRef.current.y + dy });
+			setDragOffset({
+				x: dragOrigRef.current.x + dx,
+				y: dragOrigRef.current.y + dy,
+			});
 		};
 
 		const onPointerUp = () => {
 			draggingRef.current = false;
 			// Snap to nearest horizontal edge
-			const el = document.getElementById('minimized-widget');
+			const el = document.getElementById("minimized-widget");
 			if (el) {
 				const rect = el.getBoundingClientRect();
 				const centerX = rect.left + rect.width / 2;
 				if (centerX < window.innerWidth / 2) {
-					setAnchored('left');
+					setAnchored("left");
 					setDragOffset((d) => ({ x: 0, y: d.y }));
 				} else {
-					setAnchored('right');
+					setAnchored("right");
 					setDragOffset((d) => ({ x: 0, y: d.y }));
 				}
 			}
@@ -684,21 +687,37 @@ export default function App() {
 		<div className="relative w-full h-screen overflow-hidden bg-slate-950">
 			{/* System Monitor HUD (Left) - hidden on small screens */}
 			{/* System Monitor HUD (Left) - showable on all viewports via the HUD button */}
-		<div>
-			{showHudMonitor && (
-				<HudMonitor audioData={audioData} theme={currentTheme} onClose={() => setShowHudMonitor(false)} />
-			)}
-			{/* small-screen HUD reveal button when HUD is closed */}
-			{!showHudMonitor && (
-				<button type="button" onClick={() => setShowHudMonitor(true)} className="fixed z-50 p-2 text-sm border rounded md:hidden left-4 top-4 bg-black/60 border-white/10">🖥</button>
-			)}
-			{/* desktop Show HUD control when HUD is closed */}
-			{!showHudMonitor && (
-				<div className="hidden ml-4 md:inline">
-					<button type="button" onClick={() => setShowHudMonitor(true)} className="px-2 py-1 text-xs rounded text-white/40 hover:bg-white/5">Show HUD</button>
-				</div>
-			)}
-		</div>
+			<div>
+				{showHudMonitor && (
+					<HudMonitor
+						audioData={audioData}
+						theme={currentTheme}
+						onClose={() => setShowHudMonitor(false)}
+					/>
+				)}
+				{/* small-screen HUD reveal button when HUD is closed */}
+				{!showHudMonitor && (
+					<button
+						type="button"
+						onClick={() => setShowHudMonitor(true)}
+						className="fixed z-50 p-2 text-sm border rounded md:hidden left-4 top-4 bg-black/60 border-white/10"
+					>
+						🖥
+					</button>
+				)}
+				{/* desktop Show HUD control when HUD is closed */}
+				{!showHudMonitor && (
+					<div className="hidden ml-4 md:inline">
+						<button
+							type="button"
+							onClick={() => setShowHudMonitor(true)}
+							className="px-2 py-1 text-xs rounded text-white/40 hover:bg-white/5"
+						>
+							Show HUD
+						</button>
+					</div>
+				)}
+			</div>
 
 			{/* HUD Player (Right) */}
 			<div className="absolute right-6 bottom-6 md:right-6 md:bottom-auto md:top-6 z-30 w-[calc(100%-3rem)] md:w-80 rounded-2xl border border-white/10 bg-black/40 p-4 text-emerald-400 shadow-2xl backdrop-blur-xl">
@@ -730,34 +749,56 @@ export default function App() {
 						{!isHidden ? (
 							<div
 								onPointerDown={onPointerDownMin}
-								style={{ transform: `translate(${dragOffset.x}px, ${dragOffset.y}px)` }}
-								className={`fixed ${anchored === 'right' ? 'right-6 left-auto' : 'left-6 right-auto'} bottom-6 md:static md:transform-none md:relative md:bottom-auto md:right-auto z-50 w-auto rounded-xl` }
+								style={{
+									transform: `translate(${dragOffset.x}px, ${dragOffset.y}px)`,
+								}}
+								className={`fixed ${anchored === "right" ? "right-6 left-auto" : "left-6 right-auto"} bottom-6 md:relative md:transform-none md:bottom-auto md:right-auto z-50 w-auto rounded-xl`}
 							>
 								<div className="flex items-center justify-between gap-2 p-2 border bg-black/60 border-white/10 rounded-xl backdrop-blur">
 									<div className="flex items-center gap-3">
-										<div className={`w-2 h-2 rounded-full ${isPlaying ? "bg-emerald-500 animate-pulse" : "bg-slate-700"}`} />
+										<div
+											className={`w-2 h-2 rounded-full ${isPlaying ? "bg-emerald-500 animate-pulse" : "bg-slate-700"}`}
+										/>
 										<div className="font-mono text-xs">
-											<div>{currentTheme.icon} {currentTheme.name}</div>
-											<div className="text-[10px] text-white/40">{isPlaying ? "TRANSMITTING" : "IDLE"}</div>
+											<div>
+												{currentTheme.icon} {currentTheme.name}
+											</div>
+											<div className="text-[10px] text-white/40">
+												{isPlaying ? "TRANSMITTING" : "IDLE"}
+											</div>
 										</div>
 									</div>
 									<div className="flex items-center gap-2">
-										<button type="button" onClick={() => setIsMinimized(false)} className="px-2 py-1 text-xs border rounded">▢</button>
-										<button type="button" onClick={handleTogglePlay} className="px-2 py-1 text-xs border rounded">{isPlaying ? '■' : '▶'}</button>
+										<button
+											type="button"
+											onClick={() => setIsMinimized(false)}
+											className="px-2 py-1 text-xs border rounded"
+										>
+											▢
+										</button>
+										<button
+											type="button"
+											onClick={handleTogglePlay}
+											className="px-2 py-1 text-xs border rounded"
+										>
+											{isPlaying ? "■" : "▶"}
+										</button>
 									</div>
 								</div>
 							</div>
 						) : (
 							<div className="flex items-center gap-2">
 								<button
+									type="button"
 									onClick={() => setIsHidden(false)}
-									className={`fixed ${anchored === 'right' ? 'right-6' : 'left-6'} bottom-6 z-50 w-10 h-10 rounded-full bg-black/50 border border-white/10 flex items-center justify-center text-xs`}
+									className={`fixed ${anchored === "right" ? "right-6" : "left-6"} bottom-6 z-50 w-10 h-10 rounded-full bg-black/50 border border-white/10 flex items-center justify-center text-xs`}
 								>
 									▸
 								</button>
 								<button
+									type="button"
 									onClick={() => setShowHudMonitor(true)}
-									className={`fixed ${anchored === 'right' ? 'right-20' : 'left-20'} bottom-6 z-50 w-10 h-10 rounded-full bg-black/50 border border-white/10 flex items-center justify-center text-xs`}
+									className={`fixed ${anchored === "right" ? "right-20" : "left-20"} bottom-6 z-50 w-10 h-10 rounded-full bg-black/50 border border-white/10 flex items-center justify-center text-xs`}
 								>
 									🖥
 								</button>
