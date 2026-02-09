@@ -1,42 +1,40 @@
-# Wake Transmission
+# Wake Transmission — Immersive Audio-Reactive Visualizer
 
-Wake Transmission is an audio-reactive visualizer built with React and Three.js. It combines real-time frequency analysis, animated 3D scenes, and ambient playback controls.
+**Wake Transmission** is a cutting-edge, audio-reactive visual experience built with **React** and **Three.js**. It transforms sound into stunning 3D landscapes in real-time, providing a meditative and visually captivating environment synchronized with your music.
 
-## Features
+## ✨ Features
 
-- Real-time audio analysis (low / mid / high band energy)
-- 3D reactive scene rendered with React Three Fiber
-- Post-processing effects (Bloom, Noise, Vignette)
-- Dynamic starfield and HUD monitor overlays
-- Multiple visual themes (Neon, Synthwave, Ocean, Lava, Aurora, Midnight, Toxic, Ember)
-- Multiple animation styles (Classic, Pulse, Spiral, Glitch, Zen, Chaos, Black Hole, Nebula)
-- Ambient / classical track playback controls
+- 🔊 **Real-Time Analysis**: Advanced frequency spectrum analysis (Low, Mid, High bands) driving 3D geometry.
+- 🎨 **Dynamic Themes**: Choose from neonatal palettes like `Neon`, `Synthwave`, `Aurora`, and `Midnight`.
+- 🌀 **Animation Styles**: Eight distinct modes of motion including `Spiral`, `Glitch`, `Chaos`, and `Nebula`.
+- 🌌 **Atmospheric Post-Processing**: Bloom, Vignette, and Noise effects for a cinematic look.
+- 🚀 **HUD Overlays**: Futuristic Starfield and Monitor interfaces for an immersive pilot-seat feel.
+- 🎵 **Curated Soundscapes**: Built-in library of ambient and classical tracks.
 
-## Tech Stack
+## 🛠️ Tech Stack
 
-- React 19 + TypeScript
-- Three.js + @react-three/fiber + @react-three/drei
-- @react-three/postprocessing
-- Framer Motion + GSAP
-- Tone.js
-- Vite 7 + Tailwind CSS 4
+- **Framework**: React 19 + TypeScript
+- **3D Engine**: Three.js + @react-three/fiber + @react-three/drei
+- **Effects**: @react-three/postprocessing
+- **Motion**: Framer Motion + GSAP
+- **Audio Logic**: Tone.js & Web Audio API
+- **Build Tool**: Vite 7 + Tailwind CSS 4
 
-## Getting Started
+## 🚀 Getting Started
 
 ```bash
+# Install dependencies
 bun install
+
+# Start development server
 bun run dev
 ```
 
-Open `http://localhost:5173`.
+Open [http://localhost:5173](http://localhost:5173) to enter the transmission.
 
-## Scripts
+## 📦 Scripts
 
-```bash
-bun run dev
-bun run build
-bun run preview
-bun run typecheck
-bun run lint
-bun run format
-```
+- `bun run dev`: Start local development server.
+- `bun run build`: Create a production-ready build.
+- `bun run typecheck`: Run TypeScript compilation check.
+- `bun run lint`: Execute linting checks.
