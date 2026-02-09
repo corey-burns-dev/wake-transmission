@@ -1,0 +1,10 @@
+node_modules
+dist
+build
+.git
+.cache
+.vercel
+.turbo
+coverage
+public
+*.lock

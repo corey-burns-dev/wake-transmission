@@ -38,3 +38,26 @@ Open [http://localhost:5173](http://localhost:5173) to enter the transmission.
 - `bun run build`: Create a production-ready build.
 - `bun run typecheck`: Run TypeScript compilation check.
 - `bun run lint`: Execute linting checks.
+- `bun run lint`: Execute linting checks (now powered by Biome).
+- `bun run lint:fix`: Apply auto-fixes using Biome.
+- `bun run format`: Format code using Biome.
+
+## Biome (formatting + linting)
+
+We switched formatting and linting to Biome. Install Biome as a dev dependency and run the commands below:
+
+```bash
+# with bun
+bun add -d biome
+
+# lint only
+bun run lint
+
+# apply autofixes
+bun run lint:fix
+
+# format files
+bun run format
+```
+
+If you want to fully remove ESLint/Prettier, uninstall their packages and remove `eslint.config.js`.

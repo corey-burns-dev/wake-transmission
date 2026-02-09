@@ -15,7 +15,7 @@ export async function onRequest() {
 			headers: newHeaders,
 		});
 	} catch (err) {
-		return new Response("Error fetching audio stream: " + err.message, {
+		return new Response(`Error fetching audio stream: ${err.message}` , {
 			status: 500,
 		});
 	}

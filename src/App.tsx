@@ -569,8 +569,17 @@ export default function App() {
 	const [gain, setGain] = useState(0.8);
 	const [themeIndex, setThemeIndex] = useState(0);
 	const [showThemes, setShowThemes] = useState(false);
+	const [showHudMonitor, setShowHudMonitor] = useState(true);
 	const [animStyleIndex, setAnimStyleIndex] = useState(0);
 	const [showAnimStyles, setShowAnimStyles] = useState(false);
+	const [isMinimized, setIsMinimized] = useState(false);
+	const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+	const draggingRef = useRef(false);
+	const dragStartRef = useRef({ x: 0, y: 0 });
+	const dragOrigRef = useRef({ x: 0, y: 0 });
+	const [anchored, setAnchored] = useState<'right' | 'left'>('right');
+	const [isHidden, setIsHidden] = useState(false);
+	const hideTimerRef = useRef<number | null>(null);
 	const currentTheme = themes[themeIndex];
 	const currentAnimStyle = animationStyles[animStyleIndex];
 	const audioData = useAudioAnalyzer(audioElement, isPlaying);
@@ -584,9 +593,13 @@ export default function App() {
 		if (!isPlaying) {
 			audioElement.play();
 			setIsPlaying(true);
+			setIsMinimized(true);
+			setIsHidden(false);
 		} else {
 			audioElement.pause();
 			setIsPlaying(false);
+			setIsMinimized(false);
+			setIsHidden(false);
 		}
 	};
 
@@ -605,33 +618,160 @@ export default function App() {
 		}
 	}, [gain, audioElement]);
 
+	// Drag and auto-hide for minimized bar
+	useEffect(() => {
+		const onPointerMove = (e: PointerEvent) => {
+			if (!draggingRef.current) return;
+			const dx = e.clientX - dragStartRef.current.x;
+			const dy = e.clientY - dragStartRef.current.y;
+			setDragOffset({ x: dragOrigRef.current.x + dx, y: dragOrigRef.current.y + dy });
+		};
+
+		const onPointerUp = () => {
+			draggingRef.current = false;
+			// Snap to nearest horizontal edge
+			const el = document.getElementById('minimized-widget');
+			if (el) {
+				const rect = el.getBoundingClientRect();
+				const centerX = rect.left + rect.width / 2;
+				if (centerX < window.innerWidth / 2) {
+					setAnchored('left');
+					setDragOffset((d) => ({ x: 0, y: d.y }));
+				} else {
+					setAnchored('right');
+					setDragOffset((d) => ({ x: 0, y: d.y }));
+				}
+			}
+			if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
+			hideTimerRef.current = window.setTimeout(() => setIsHidden(true), 4000);
+		};
+
+		window.addEventListener("pointermove", onPointerMove);
+		window.addEventListener("pointerup", onPointerUp);
+		return () => {
+			window.removeEventListener("pointermove", onPointerMove);
+			window.removeEventListener("pointerup", onPointerUp);
+			if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
+		};
+	}, []);
+
+	const onPointerDownMin = (e: React.PointerEvent) => {
+		(e.target as Element).setPointerCapture?.(e.pointerId);
+		draggingRef.current = true;
+		dragStartRef.current = { x: e.clientX, y: e.clientY };
+		dragOrigRef.current = { ...dragOffset };
+		if (hideTimerRef.current) {
+			window.clearTimeout(hideTimerRef.current);
+			hideTimerRef.current = null;
+		}
+		setIsHidden(false);
+	};
+
+	useEffect(() => {
+		if (isMinimized && isPlaying) {
+			if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
+			hideTimerRef.current = window.setTimeout(() => setIsHidden(true), 4000);
+		} else {
+			if (hideTimerRef.current) {
+				window.clearTimeout(hideTimerRef.current);
+				hideTimerRef.current = null;
+			}
+			setIsHidden(false);
+		}
+	}, [isMinimized, isPlaying]);
+
 	return (
-		<div className="w-full h-screen bg-slate-950 relative overflow-hidden">
-			{/* System Monitor HUD (Left) */}
-			<HudMonitor audioData={audioData} theme={currentTheme} />
+		<div className="relative w-full h-screen overflow-hidden bg-slate-950">
+			{/* System Monitor HUD (Left) - hidden on small screens */}
+			{/* System Monitor HUD (Left) - showable on all viewports via the HUD button */}
+		<div>
+			{showHudMonitor && (
+				<HudMonitor audioData={audioData} theme={currentTheme} onClose={() => setShowHudMonitor(false)} />
+			)}
+			{/* small-screen HUD reveal button when HUD is closed */}
+			{!showHudMonitor && (
+				<button type="button" onClick={() => setShowHudMonitor(true)} className="fixed z-50 p-2 text-sm border rounded md:hidden left-4 top-4 bg-black/60 border-white/10">🖥</button>
+			)}
+			{/* desktop Show HUD control when HUD is closed */}
+			{!showHudMonitor && (
+				<div className="hidden ml-4 md:inline">
+					<button type="button" onClick={() => setShowHudMonitor(true)} className="px-2 py-1 text-xs rounded text-white/40 hover:bg-white/5">Show HUD</button>
+				</div>
+			)}
+		</div>
 
 			{/* HUD Player (Right) */}
-			<div className="absolute right-6 bottom-6 md:bottom-auto md:top-6 z-30 w-[calc(100%-3rem)] md:w-80 rounded-2xl border border-white/10 bg-black/40 p-4 text-emerald-400 shadow-2xl backdrop-blur-xl">
+			<div className="absolute right-6 bottom-6 md:right-6 md:bottom-auto md:top-6 z-30 w-[calc(100%-3rem)] md:w-80 rounded-2xl border border-white/10 bg-black/40 p-4 text-emerald-400 shadow-2xl backdrop-blur-xl">
 				<div className="flex items-center justify-between mb-4">
 					<div>
 						<p className="text-[10px] uppercase tracking-[0.25em] text-emerald-500/60">
 							Wake Transmission
 						</p>
-						<p className="mt-1 text-sm font-mono font-bold tracking-tight">
+						<p className="mt-1 font-mono text-sm font-bold tracking-tight">
 							LIVE STREAM FEED
 						</p>
 					</div>
-					<div
-						className={`w-2 h-2 rounded-full ${isPlaying ? "bg-emerald-500 animate-pulse" : "bg-slate-700"}`}
-					/>
+					<div className="flex items-center gap-2">
+						<div
+							className={`w-2 h-2 rounded-full ${isPlaying ? "bg-emerald-500 animate-pulse" : "bg-slate-700"}`}
+						/>
+						<button
+							type="button"
+							onClick={() => setIsMinimized(true)}
+							className="px-2 py-1 text-xs rounded text-white/60 hover:bg-white/5"
+						>
+							—
+						</button>
+					</div>
 				</div>
 
-				<div className="space-y-4">
+				{isMinimized ? (
+					<>
+						{!isHidden ? (
+							<div
+								onPointerDown={onPointerDownMin}
+								style={{ transform: `translate(${dragOffset.x}px, ${dragOffset.y}px)` }}
+								className={`fixed ${anchored === 'right' ? 'right-6 left-auto' : 'left-6 right-auto'} bottom-6 md:static md:transform-none md:relative md:bottom-auto md:right-auto z-50 w-auto rounded-xl` }
+							>
+								<div className="flex items-center justify-between gap-2 p-2 border bg-black/60 border-white/10 rounded-xl backdrop-blur">
+									<div className="flex items-center gap-3">
+										<div className={`w-2 h-2 rounded-full ${isPlaying ? "bg-emerald-500 animate-pulse" : "bg-slate-700"}`} />
+										<div className="font-mono text-xs">
+											<div>{currentTheme.icon} {currentTheme.name}</div>
+											<div className="text-[10px] text-white/40">{isPlaying ? "TRANSMITTING" : "IDLE"}</div>
+										</div>
+									</div>
+									<div className="flex items-center gap-2">
+										<button type="button" onClick={() => setIsMinimized(false)} className="px-2 py-1 text-xs border rounded">▢</button>
+										<button type="button" onClick={handleTogglePlay} className="px-2 py-1 text-xs border rounded">{isPlaying ? '■' : '▶'}</button>
+									</div>
+								</div>
+							</div>
+						) : (
+							<div className="flex items-center gap-2">
+								<button
+									onClick={() => setIsHidden(false)}
+									className={`fixed ${anchored === 'right' ? 'right-6' : 'left-6'} bottom-6 z-50 w-10 h-10 rounded-full bg-black/50 border border-white/10 flex items-center justify-center text-xs`}
+								>
+									▸
+								</button>
+								<button
+									onClick={() => setShowHudMonitor(true)}
+									className={`fixed ${anchored === 'right' ? 'right-20' : 'left-20'} bottom-6 z-50 w-10 h-10 rounded-full bg-black/50 border border-white/10 flex items-center justify-center text-xs`}
+								>
+									🖥
+								</button>
+							</div>
+						)}
+					</>
+				) : null}
+
+				<div className={isMinimized ? "hidden" : "space-y-4"}>
 					<button
 						type="button"
 						onClick={handleTogglePlay}
 						style={{ borderColor: `${currentTheme.accent}50` }}
-						className="w-full py-2 border rounded-lg hover:bg-white/5 transition-colors text-xs font-mono uppercase tracking-widest"
+						className="w-full py-2 font-mono text-xs tracking-widest uppercase transition-colors border rounded-lg hover:bg-white/5"
 					>
 						{isPlaying ? "STOP TRANSMISSION" : "START TRANSMISSION"}
 					</button>
@@ -642,14 +782,14 @@ export default function App() {
 							type="button"
 							onClick={() => setShowThemes(!showThemes)}
 							style={{ borderColor: `${currentTheme.accent}50` }}
-							className="w-full py-2 border rounded-lg hover:bg-white/5 transition-colors text-xs font-mono uppercase tracking-widest flex items-center justify-center gap-2"
+							className="flex items-center justify-center w-full gap-2 py-2 font-mono text-xs tracking-widest uppercase transition-colors border rounded-lg hover:bg-white/5"
 						>
 							<span>{currentTheme.icon}</span>
 							<span>{currentTheme.name}</span>
 							<span className="opacity-50">▼</span>
 						</button>
 						{showThemes && (
-							<div className="absolute top-full left-0 right-0 mt-1 bg-black/80 backdrop-blur-lg rounded-lg border border-white/10 overflow-hidden z-50">
+							<div className="absolute bottom-full left-0 right-0 md:absolute md:top-full md:bottom-auto mb-1 md:mt-1 bg-black/80 backdrop-blur-lg rounded-lg border border-white/10 overflow-auto z-50 max-h-[45vh]">
 								{themes.map((t, i) => (
 									<button
 										type="button"
@@ -664,7 +804,7 @@ export default function App() {
 									>
 										<span>{t.icon}</span>
 										<span>{t.name}</span>
-										<div className="ml-auto flex gap-1">
+										<div className="flex gap-1 ml-auto">
 											<div
 												className="w-3 h-3 rounded-full"
 												style={{ background: t.low.color }}
@@ -690,14 +830,14 @@ export default function App() {
 							type="button"
 							onClick={() => setShowAnimStyles(!showAnimStyles)}
 							style={{ borderColor: `${currentTheme.accent}50` }}
-							className="w-full py-2 border rounded-lg hover:bg-white/5 transition-colors text-xs font-mono uppercase tracking-widest flex items-center justify-center gap-2"
+							className="flex items-center justify-center w-full gap-2 py-2 font-mono text-xs tracking-widest uppercase transition-colors border rounded-lg hover:bg-white/5"
 						>
 							<span>{currentAnimStyle.icon}</span>
 							<span>{currentAnimStyle.name}</span>
 							<span className="opacity-50">▼</span>
 						</button>
 						{showAnimStyles && (
-							<div className="absolute top-full left-0 right-0 mt-1 bg-black/80 backdrop-blur-lg rounded-lg border border-white/10 overflow-hidden z-50">
+							<div className="absolute bottom-full left-0 right-0 md:absolute md:top-full md:bottom-auto mb-1 md:mt-1 bg-black/80 backdrop-blur-lg rounded-lg border border-white/10 overflow-auto z-50 max-h-[45vh]">
 								{animationStyles.map((s, i) => (
 									<button
 										type="button"
@@ -725,7 +865,7 @@ export default function App() {
 						href="https://dreaming.coreyburns.ca"
 						target="_blank"
 						rel="noopener noreferrer"
-						className="w-full py-2 border rounded-lg hover:bg-white/5 transition-colors text-xs font-mono uppercase tracking-widest flex items-center justify-center gap-2 group"
+						className="flex items-center justify-center w-full gap-2 py-2 font-mono text-xs tracking-widest uppercase transition-colors border rounded-lg hover:bg-white/5 group"
 						style={{ borderColor: `${currentTheme.accent}30` }}
 					>
 						<span className="group-hover:animate-pulse">✨</span>
@@ -747,7 +887,7 @@ export default function App() {
 								const val = parseFloat(e.target.value);
 								setGain(val);
 							}}
-							className="w-full accent-emerald-500 bg-emerald-950 h-1 rounded-full appearance-none overflow-hidden"
+							className="w-full h-1 overflow-hidden rounded-full appearance-none accent-emerald-500 bg-emerald-950"
 						/>
 					</div>
 				</div>
@@ -763,7 +903,7 @@ export default function App() {
 			</div>
 
 			{/* Center Text */}
-			<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-center pointer-events-none">
+			<div className="absolute z-10 text-center -translate-x-1/2 -translate-y-1/2 pointer-events-none top-1/2 left-1/2">
 				<AnimatePresence mode="wait">
 					<motion.h1
 						key={dreamWords[wordIndex]}

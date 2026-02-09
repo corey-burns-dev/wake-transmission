@@ -6,9 +6,10 @@ import type { AudioData } from "../hooks/useAudioAnalyzer";
 interface HudMonitorProps {
 	audioData: React.MutableRefObject<AudioData>;
 	theme: ColorTheme;
+	onClose?: () => void;
 }
 
-export function HudMonitor({ audioData, theme }: HudMonitorProps) {
+export function HudMonitor({ audioData, theme, onClose }: HudMonitorProps) {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
 	// We need a loop to draw to the 2D canvas.
@@ -107,7 +108,8 @@ export function HudMonitor({ audioData, theme }: HudMonitorProps) {
 	}, [audioData, theme]);
 
 	return (
-		<div className="absolute left-6 top-6 z-30 w-64 rounded-2xl border border-white/10 bg-black/40 p-4 shadow-2xl backdrop-blur-xl">
+		<div className="absolute z-30 w-64 p-4 border shadow-2xl left-6 top-6 rounded-2xl border-white/10 bg-black/40 backdrop-blur-xl">
+			<button type="button" onClick={onClose} className="absolute p-1 text-xs rounded top-3 right-3 text-white/40 hover:bg-white/5">✕</button>
 			<div className="flex items-center justify-between mb-2">
 				<p className="text-[10px] uppercase tracking-[0.25em] text-emerald-500/60 w-full border-b border-white/5 pb-2">
 					SYSTEM MONITOR
