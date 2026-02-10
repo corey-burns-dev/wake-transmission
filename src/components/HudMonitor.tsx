@@ -109,7 +109,13 @@ export function HudMonitor({ audioData, theme, onClose }: HudMonitorProps) {
 
 	return (
 		<div className="absolute z-30 w-64 p-4 border shadow-2xl left-6 top-6 rounded-2xl border-white/10 bg-black/40 backdrop-blur-xl">
-			<button type="button" onClick={onClose} className="absolute p-1 text-xs rounded top-3 right-3 text-white/40 hover:bg-white/5">✕</button>
+			<button
+				type="button"
+				onClick={onClose}
+				className="absolute p-1 text-xs rounded top-3 right-3 text-white/40 hover:bg-white/5"
+			>
+				✕
+			</button>
 			<div className="flex items-center justify-between mb-2">
 				<p className="text-[10px] uppercase tracking-[0.25em] text-emerald-500/60 w-full border-b border-white/5 pb-2">
 					SYSTEM MONITOR
@@ -121,6 +127,7 @@ export function HudMonitor({ audioData, theme, onClose }: HudMonitorProps) {
 				width={220}
 				height={100}
 				className="w-full h-auto opacity-80"
+				aria-label="Frequency spectrum and waveform visualization"
 			/>
 
 			<div className="mt-2 text-[9px] font-mono text-white/30 flex justify-between">

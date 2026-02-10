@@ -8,6 +8,7 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="canonical" href="https://waking.coreyburns.ca/" />
+  <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#0ea5a4" />
   <meta name="description"
     content="An immersive, audio-reactive visualizer experience built with React and Three.js. Explore real-time frequency analysis and stunning 3D scenes synchronized to music." />
@@ -30,6 +31,25 @@
   <meta name="twitter:description"
     content="An immersive, audio-reactive visualizer experience. Explore real-time frequency analysis and stunning 3D scenes synchronized to music." />
   <meta name="twitter:image" content="/og-image.png" />
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "AudioObject",
+      "name": "Wake Transmission",
+      "description": "An immersive, audio-reactive visualizer experience built with React and Three.js.",
+      "url": "https://waking.coreyburns.ca/",
+      "contentUrl": "https://waking.coreyburns.ca/radio",
+      "encodingFormat": "audio/mpeg",
+      "author": {
+        "@type": "Person",
+        "name": "Corey Burns"
+      },
+      "educationalUse": "Visualizer",
+      "isAccessibleForFree": "True"
+    }
+  </script>
 </head>
 
 <body>

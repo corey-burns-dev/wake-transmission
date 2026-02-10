@@ -607,9 +607,12 @@ export default function App() {
 
 	return (
 		<div className="relative w-full h-screen overflow-hidden bg-slate-950">
+			{/* Visually Hidden H1 for SEO and Screen Readers */}
+			<h1 className="sr-only">Wake Transmission — Audio-Reactive Visualizer</h1>
+
 			{/* System Monitor HUD (Left) - hidden on small screens */}
 			{/* System Monitor HUD (Left) - showable on all viewports via the HUD button */}
-			<div>
+			<aside aria-label="System Monitor">
 				{showHudMonitor && (
 					<HudMonitor
 						audioData={audioData}
@@ -622,6 +625,7 @@ export default function App() {
 					<button
 						type="button"
 						onClick={() => setShowHudMonitor(true)}
+						aria-label="Show System Monitor"
 						className="fixed z-50 p-2 text-sm border rounded md:hidden left-4 top-4 bg-black/60 border-white/10"
 					>
 						🖥
@@ -639,75 +643,84 @@ export default function App() {
 						</button>
 					</div>
 				)}
-			</div>
+			</aside>
 
 			{/* HUD Player (Right) */}
-			<MusicPlayer
-				isPlaying={isPlaying}
-				onTogglePlay={handleTogglePlay}
-				gain={gain}
-				onGainChange={setGain}
-				themeIndex={themeIndex}
-				setThemeIndex={setThemeIndex}
-				themes={themes}
-				animStyleIndex={animStyleIndex}
-				setAnimStyleIndex={setAnimStyleIndex}
-				animationStyles={animationStyles}
-			/>
+			<aside aria-label="Music Player and Controls">
+				<MusicPlayer
+					isPlaying={isPlaying}
+					onTogglePlay={handleTogglePlay}
+					gain={gain}
+					onGainChange={setGain}
+					themeIndex={themeIndex}
+					setThemeIndex={setThemeIndex}
+					themes={themes}
+					animStyleIndex={animStyleIndex}
+					setAnimStyleIndex={setAnimStyleIndex}
+					animationStyles={animationStyles}
+				/>
+			</aside>
 
-			<audio
-				ref={setAudioElement}
-				src={STREAM_URL}
-				crossOrigin="anonymous"
-				autoPlay={false}
-			>
-				<track kind="captions" />
-			</audio>
+			<main className="contents">
+				<audio
+					ref={setAudioElement}
+					src={STREAM_URL}
+					crossOrigin="anonymous"
+					autoPlay={false}
+				>
+					<track kind="captions" />
+				</audio>
 
-			{/* Center Text */}
-			<div className="absolute z-10 text-center -translate-x-1/2 -translate-y-1/2 pointer-events-none top-1/2 left-1/2">
-				<AnimatePresence mode="wait">
-					<motion.h1
-						key={dreamWords[wordIndex]}
-						initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
-						animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-						exit={{ opacity: 0, y: -20, filter: "blur(10px)" }}
-						transition={{ duration: 3, ease: "easeInOut" }}
-						className="text-5xl md:text-7xl font-light tracking-[0.5em] uppercase text-emerald-400/30"
-					>
-						{dreamWords[wordIndex]}
-					</motion.h1>
-				</AnimatePresence>
-			</div>
+				{/* Center Text */}
+				<div className="absolute z-10 text-center -translate-x-1/2 -translate-y-1/2 pointer-events-none top-1/2 left-1/2">
+					<AnimatePresence mode="wait">
+						<motion.h2
+							key={dreamWords[wordIndex]}
+							initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
+							animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+							exit={{ opacity: 0, y: -20, filter: "blur(10px)" }}
+							transition={{ duration: 3, ease: "easeInOut" }}
+							className="text-5xl md:text-7xl font-light tracking-[0.5em] uppercase text-emerald-400/30"
+						>
+							{dreamWords[wordIndex]}
+						</motion.h2>
+					</AnimatePresence>
+				</div>
 
-			{/* 3D Scene */}
-			<ThemeContext.Provider value={currentTheme}>
-				<AnimationContext.Provider value={currentAnimStyle.name}>
-					<Canvas camera={{ position: [0, 4, 10], fov: 60 }}>
-						<color attach="background" args={[currentTheme.background]} />
-						<ambientLight intensity={0.2} />
-						<pointLight
-							position={[10, 10, 10]}
-							intensity={1}
-							color={currentTheme.lightPrimary}
-						/>
-						<pointLight
-							position={[-10, 5, -10]}
-							intensity={0.5}
-							color={currentTheme.lightSecondary}
-						/>
+				{/* 3D Scene */}
+				<ThemeContext.Provider value={currentTheme}>
+					<AnimationContext.Provider value={currentAnimStyle.name}>
+						<Canvas
+							camera={{ position: [0, 4, 10], fov: 60 }}
+							gl={{ antialias: true }}
+							dpr={[1, 2]}
+							aria-label="Audio-reactive 3D visualizer showing dynamic frequency waves and cosmic particles"
+						>
+							<color attach="background" args={[currentTheme.background]} />
+							<ambientLight intensity={0.2} />
+							<pointLight
+								position={[10, 10, 10]}
+								intensity={1}
+								color={currentTheme.lightPrimary}
+							/>
+							<pointLight
+								position={[-10, 5, -10]}
+								intensity={0.5}
+								color={currentTheme.lightSecondary}
+							/>
 
-						<AuroraField audioData={audioData} />
-						<SpaceBackground audioData={audioData} theme={currentTheme} />
+							<AuroraField audioData={audioData} />
+							<SpaceBackground audioData={audioData} theme={currentTheme} />
 
-						<EffectComposer>
-							<Bloom luminanceThreshold={0.5} intensity={1.5} mipmapBlur />
-							<Noise opacity={0.05} />
-							<Vignette eskil={false} offset={0.1} darkness={1.1} />
-						</EffectComposer>
-					</Canvas>
-				</AnimationContext.Provider>
-			</ThemeContext.Provider>
+							<EffectComposer>
+								<Bloom luminanceThreshold={0.5} intensity={1.5} mipmapBlur />
+								<Noise opacity={0.05} />
+								<Vignette eskil={false} offset={0.1} darkness={1.1} />
+							</EffectComposer>
+						</Canvas>
+					</AnimationContext.Provider>
+				</ThemeContext.Provider>
+			</main>
 		</div>
 	);
 }

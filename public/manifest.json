@@ -1,0 +1,21 @@
+{
+    "short_name": "Wake",
+    "name": "Wake Transmission — Audio-Reactive Visualizer",
+    "icons": [
+        {
+            "src": "/favicon.svg",
+            "type": "image/svg+xml",
+            "sizes": "any"
+        },
+        {
+            "src": "/apple-touch-icon.png",
+            "type": "image/png",
+            "sizes": "180x180"
+        }
+    ],
+    "start_url": "/",
+    "background_color": "#020617",
+    "display": "standalone",
+    "scope": "/",
+    "theme_color": "#0ea540"
+}

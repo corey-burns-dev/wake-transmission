@@ -126,6 +126,7 @@ export function MusicPlayer({
 				<button
 					type="button"
 					onClick={() => setIsHidden(false)}
+					aria-label="Restore Player"
 					className={`fixed ${anchored === "right" ? "right-6" : "left-6"} bottom-6 z-50 w-8 h-8 rounded-full bg-black/60 border border-white/10 flex items-center justify-center text-xs backdrop-blur-sm transition-transform hover:scale-110`}
 				>
 					▸
@@ -196,6 +197,7 @@ export function MusicPlayer({
 								type="button"
 								onPointerDown={(e) => e.stopPropagation()}
 								onClick={() => setPlayerMode("normal")}
+								aria-label="Expand Player"
 								className="p-1.5 text-white/60 hover:text-white transition-colors"
 							>
 								<Maximize2 size={12} />
