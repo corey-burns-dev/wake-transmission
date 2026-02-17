@@ -48,7 +48,11 @@ export function useAudioAnalyzer(
 		try {
 			// Reuse existing source or create new one
 			if (sourceMap.has(audioElement)) {
-				source = sourceMap.get(audioElement)!;
+				const maybeSource = sourceMap.get(audioElement);
+				if (!maybeSource) {
+					throw new Error("Audio source not found for element.");
+				}
+				source = maybeSource;
 			} else {
 				source = ctx.createMediaElementSource(audioElement);
 				sourceMap.set(audioElement, source);
