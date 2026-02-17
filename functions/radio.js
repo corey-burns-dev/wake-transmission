@@ -1,5 +1,5 @@
 export async function onRequest() {
-	const url = "http://radio.coreyburns.ca:8000/radio.ogg";
+	const url = "https://radio.coreyburns.ca/radio.ogg";
 
 	try {
 		const response = await fetch(url, {
