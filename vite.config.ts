@@ -6,7 +6,7 @@ export default defineConfig({
 	server: {
 		proxy: {
 			"/local-stream.ogg": {
-				target: "http://192.168.2.124:8003",
+				target: "http://192.168.2.124:8000",
 				changeOrigin: true,
 				rewrite: (path) => path.replace(/^\/local-stream\.ogg/, "/radio.ogg"),
 			},
