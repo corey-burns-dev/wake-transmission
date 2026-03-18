@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "deploy": "bun run build && bunx wrangler pages deploy dist --project-name wake-transmission --branch main",
+    "deploy:prod": "bun run deploy",
+    "cf:status": "../scripts/cf-portfolio.sh status wake-transmission",
     "preview": "vite preview",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix . && oxfmt",
